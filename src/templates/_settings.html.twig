@@ -1,0 +1,18 @@
+{% import "_includes/forms" as forms %}
+
+{{ forms.textField({
+  name: 'productUriFormat',
+  value: settings.productUriFormat,
+  label: 'Product uri format',
+  instructions: 'The format used for shopify product uris. You can use product properties like {handle}',
+  class: 'code',
+  first: true,
+}) }}
+
+{{ forms.textField({
+  name: 'productTemplate',
+  value: settings.productTemplate,
+  label: 'Product template',
+  instructions: 'Path to the template used for shopify products',
+  class: 'code',
+}) }}
