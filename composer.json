@@ -1,7 +1,6 @@
 {
   "name": "yoannisj/craft-shopify-store",
   "description": "Craft CMS plugin to integrate with Shopify store(s) for ecommerce",
-  "version": "0.1.0",
   "type": "craft-plugin",
   "license": "MIT",
   "authors": [
