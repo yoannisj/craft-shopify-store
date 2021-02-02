@@ -59,6 +59,9 @@ class StorefrontApi extends ApiService
             'input' => $input,
         ], $site, false);
 
+        Craft::error("CHECKOUT RESULTS", 'shopify-checkout-debug');
+        Craft::error($results, 'shopify-checkout-debug');
+
         return ArrayHelper::getValue($results, 'data.checkoutCreate.checkout');
     }
 

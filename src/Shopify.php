@@ -104,6 +104,9 @@ class Shopify extends Plugin
             'checkouts' => Checkouts::class,
         ]);
 
+        $cart = \modules\store\StoreModule::$instance->getCarts()->getCart();
+        $checkout = $cart->getCheckout(true, false);
+
         // register plugin fields
         Event::on(
             Fields::class,

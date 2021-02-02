@@ -81,14 +81,18 @@ class Checkouts extends Component
             return $checkout;
         }
 
+        Craft::error("CHECKOUT INPUT", 'shopify-checkout-debug');
+        Craft::error($input, 'shopify-checkout-debug');
+
         // get checkout data by creating checkout on shopify
         $data = Shopify::$plugin->getStorefrontApi()->createCheckout($input, $site->handle);
 
-        if ($data)
-        {
+        if ($data) {
             $checkout->setAttributes($data, false);
             $checkout->status = Checkout::STATUS_READY;
         } else {
+            Craft::error("NO CHECKOUT DATA", 'shopify-checkout-debug');
+            Craft::error($data, 'shopify-checkout-debug');
             // @todo: set `userErrors` attribute on the checkout model
             $checkout->status = Checkout::STATUS_FAILED;
         }
