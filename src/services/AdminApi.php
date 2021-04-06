@@ -125,25 +125,47 @@ class AdminApi extends ApiService
 
     public function getAllProductIds( string $site = null, bool $useCache = true )
     {
-        $query = 'query allProductIds {
-            products(first: 250) {
-                edges {
-                    cursor
-                    node {
-                        adminId: id
+        $ids = [];
+
+        $pageProductsFound = 0;
+        $productsPerPage = 250;
+        $afterCursor = null;
+
+        do
+        {
+            $param = ApiHelper::stringifyQueryParams([
+                'first' => $productsPerPage,
+                'after' => $afterCursor ? '"'.$afterCursor.'"' : null,
+            ]);
+
+            // query products and pagination info
+            $query = 'query allProductReferences {
+                products('.$param.') {
+                    edges {
+                        cursor
+                        node {
+                            adminId: id
+                        }
+                    }
+                    pageInfo {
+                        hasNextPage
                     }
                 }
-            }
-        }';
+            }';
 
-        $results = $this->request($query, null, $site, $useCache);
-        $productEdges = ArrayHelper::getValue($results, 'data.products.edges');
+            $results = $this->request($query, null, $site, $useCache);
+            $productEdges = ArrayHelper::getValue($results, 'data.products.edges');
 
-        // if count($productEdges == 250) {
-        //      run new request to fetch missing products...
-        // }
+            // collect product ids for current page
+            $pageIds = ArrayHelper::getColumn($productEdges, 'node.adminId');
+            $ids = array_merge($ids, array_values($pageIds));
 
-        $ids = ArrayHelper::getColumn($productEdges, 'node.adminId');
+            // get pagination info to know if we should continue
+            $hasNextPage = ArrayHelper::getValue($results, 'data.products.pageInfo.hasNextPage');
+            $lastProductEdge = array_pop($productEdges);
+            $afterCursor = $lastProductEdge ? ArrayHelper::getValue($lastProductEdge, 'cursor') : null;
+
+        } while ($hasNextPage && $afterCursor);
 
         return $ids;
     }

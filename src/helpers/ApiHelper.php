@@ -21,6 +21,28 @@ use yoannisj\shopify\models\PriceData;
 
 class ApiHelper
 {
+    /**
+     * Returns string representation of given map of API query params
+     * 
+     * @param array $params
+     * @return string
+     */
+
+    public static function stringifyQueryParams( array $params ): string
+    {
+        $string = '';
+
+        foreach ($params as $name => $value)
+        {
+            if (!is_null($value))
+            {
+                $value = (string)$value;
+                $string .= $name.': '.$value;
+            }
+        }
+
+        return $string;
+    }
 
     /**
      * Returns a list of nodes from the results of a GraphQL connection query

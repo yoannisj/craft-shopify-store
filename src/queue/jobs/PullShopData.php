@@ -96,19 +96,23 @@ class PullShopData extends BaseShopifyJob
             $currentStep++;
 
             $productIndex = 1;
+            $totalProducts = count($this->productAdminIds);
+
             foreach ($this->productAdminIds as $productAdminId)
             {
                 // next steps: pull an included product's data
                 $this->setProgress($queue, $currentStep / $totalSteps, Craft::t('shopify-store',
                     'Pull data for "{shopTitle}" product {index} of {total}', [
                         'shopTitle' => (string)$shop,
-                        'index' => ($currentStep - 2),
-                        'total' => ($totalSteps - 2),
+                        'index' => $productIndex,
+                        'total' => $totalProducts,
                     ]
                 ));
 
                 $this->includeProduct($productAdminId);
-                $currentStep++;                
+
+                $productIndex++;
+                $currentStep++;
             }
         }
 
