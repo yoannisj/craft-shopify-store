@@ -187,7 +187,7 @@ class AdminApi extends ApiService
         $query = 'query productDataById ($adminId: ID!) {
             product (id: $adminId) {
                 ...productDataFragment
-                variants (first: 1) {
+                variants (first: 8) {
                     edges {
                         cursor
                         node {
