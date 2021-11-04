@@ -317,13 +317,19 @@ class Product extends Element
      * @var String
      */
 
-    public $_variantAdminId;
+    private $_variantAdminId;
 
     /**
      * @var String
      */
 
-    public $_variantStorefrontId;
+    private $_variantStorefrontId;
+
+    /**
+     * @var string|array
+     */
+
+    private $_variantStorefrontIds;
 
     /**
      * @var String
@@ -507,6 +513,7 @@ class Product extends Element
             'shopifyData',
             'variantAdminId',
             'variantStorefrontId',
+            'variantStorefrontIds',
         ]));
 
         return $attributes;
@@ -850,7 +857,11 @@ class Product extends Element
             $productRecord = ProductRecord::findOne($this->id);
         }
 
-        $productRecord->setAttributes($this->getAttributes(), false);
+        $attributes = $this->getAttributes();
+        $attributes['variantStorefrontIds'] = implode(',',
+            $attributes['variantStorefrontIds']);
+
+        $productRecord->setAttributes($attributes, false);
         $productRecord->save(false);
 
         parent::afterSave($isNew);

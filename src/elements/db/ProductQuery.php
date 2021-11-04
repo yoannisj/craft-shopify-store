@@ -80,6 +80,12 @@ class ProductQuery extends ElementQuery
     public $variantStorefrontId;
 
     /**
+     * @var String|array
+     */
+
+    public $variantStorefrontIds;
+
+    /**
      * @var String
      */
 
@@ -204,6 +210,17 @@ class ProductQuery extends ElementQuery
     }
 
     /**
+     * 
+     */
+
+    public function variantStorefrontIds( $value ): ElementQuery
+    {
+        $this->variantStorefrontIds = $value;
+
+        return $this;
+    }
+
+    /**
      * Setter method for the `title` criteria
      */
 
@@ -263,7 +280,7 @@ class ProductQuery extends ElementQuery
         $this->query->innerJoin($joinTable, "[[shopify_products.id]] = [[subquery.elementsId]]");
         $this->subQuery->innerJoin($joinTable, "[[shopify_products.id]] = [[elements.id]]");
 
-        // select the criteria columns
+        // select the columns for element's writable properties
         $this->query->select([
             'shopify_products.shopId',
             'shopify_products.shopifyData',
@@ -304,6 +321,10 @@ class ProductQuery extends ElementQuery
         // apply 'variantStorefrontId' criteria as 'where' conditions to the subQuery
         if ($this->variantStorefrontId) {
             $this->subQuery->andWhere(DbHelper::parseParam('shopify_products.variantStorefrontId', $this->variantStorefrontId));
+        }
+
+        if ($this->variantStorefrontIds) {
+            $this->subQuery->andWhere(DbHelper::parseParam('shopify_products.variantStorefrontIds', $this->variantStorefrontIds, 'or like'));
         }
 
         // apply 'title' criteria as 'where' conditions to the subQuery

@@ -68,6 +68,7 @@ class Install extends Migration
                 'handle' => $this->string()->notNull(),
                 'variantAdminId' => $this->string()->notNull(),
                 'variantStorefrontId' => $this->string()->notNull(),
+                'variantStorefrontIds' => $this->string()->notNull(),
                 'title' => $this->string()->notNull(),
                 'description' => $this->mediumText()->null(),
                 'isGiftCard' => $this->boolean()->notNull(),
@@ -86,6 +87,7 @@ class Install extends Migration
             $this->createIndex(null, $productsTable, 'handle', false);
             $this->createIndex(null, $productsTable, 'variantAdminId', false);
             $this->createIndex(null, $productsTable, 'variantStorefrontId', false);
+            $this->createIndex(null, $productsTable, 'variantStorefrontIds', false);
             $this->createIndex(null, $productsTable, 'title', false);
             $this->createIndex(null, $productsTable, 'productType', false);
             $this->createIndex(null, $productsTable, 'vendor', false);
