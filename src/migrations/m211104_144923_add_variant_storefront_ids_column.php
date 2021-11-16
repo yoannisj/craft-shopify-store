@@ -29,9 +29,9 @@ class m211104_144923_add_variant_storefront_ids_column extends Migration
             (string)$this->text());
 
         // resave products to populate the new column
-        $primarySiteId = Craft::$app->getSites()->getPrimarySite()->id;
         $allProducts = Product::find()
-            ->siteId($primarySiteId)
+            ->limit(null)
+            ->site('*')
             ->all();
 
         foreach ($allProducts as $product)
