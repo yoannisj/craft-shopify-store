@@ -41,7 +41,7 @@ class Checkouts extends Component
 
     public function getCheckoutByKey( string $key )
     {
-        $data = Craft::$app->getCache()->get($key);
+        $data = Craft::$app->getSession()->get($key);
 
         if (!$data) return null;
 
@@ -116,7 +116,7 @@ class Checkouts extends Component
         }
 
         $data = $checkout->toArray();
-        Craft::$app->getCache()->set($checkout->key, $data, self::CHECKOUT_CACHE_DURATION);
+        Craft::$app->getSession()->set($checkout->key, $data);
 
         return true;
     }
