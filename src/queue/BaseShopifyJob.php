@@ -42,18 +42,6 @@ abstract class BaseShopifyJob extends BaseJob implements RetryableJobInterface
     public $siteId;
 
     /**
-     * @var String
-     */
-
-    public $siteHandle;
-
-    /**
-     * @var \craft\models\Site | null
-     */
-
-    protected $site;
-
-    /**
      * @var Int
      */
 
@@ -65,11 +53,6 @@ abstract class BaseShopifyJob extends BaseJob implements RetryableJobInterface
 
     public $shopDomain;
 
-    /**
-     * @var yoannisj\shopify\models\Shop | null
-     */
-
-    protected $shop;
 
     // =Public Methods
     // =========================================================================
@@ -100,68 +83,21 @@ abstract class BaseShopifyJob extends BaseJob implements RetryableJobInterface
 
     public function getSite()
     {
-        if (!isset($this->site))
-        {
-            if (isset($this->siteId))
-            {
-                $site = Craft::$app->getSites()->getSiteById($this->siteId);
-                if ($site === null) {
-                    throw new InvalidConfigException('Invalid site ID: ' . $this->siteId);
-                }
-            }
-
-            else if (isset($this->siteHandle))
-            {
-                $site = Craft::$app->getSites()->getSiteByHandle($this->siteHandle);
-                if ($site === null) {
-                    throw new InvalidConfigException('Invalid site handle: ' . $this->siteHandle);
-                }
-            }
-
-            else {
-                $site = Craft::$app->getSites()->getCurrentSite();
-            }
-
-            $this->site = $site;
+        if (isset($this->siteId)) {
+            return Craft::$app->getSites()->getSiteById($this->siteId);
         }
 
-        return $this->site;
+        return null;
     }
 
     /**
-     * Getter method for the `siteId` property
-     *
-     * @return Int
-     */
-
-    public function getSiteId()
-    {
-        if (!isset($this->siteId))
-        {
-            if (($site = $this->getSite())) {
-                $this->$siteId = $site->id;
-            }
-        }
-
-        return $this->siteId;
-    }
-
-    /**
-     * Getter method for the `siteHandle` property
-     *
-     * @return String
+     * @return string|null
      */
 
     public function getSiteHandle()
     {
-        if (!isset($this->siteHandle))
-        {
-            if (($site = $this->getSite())) {
-                $this->siteHandle = $site->handle;
-            }
-        }
-
-        return $this->siteHandle;
+        $site = $this->getSite();
+        return $site ? $site->handle : null;
     }
 
     /**
@@ -173,50 +109,48 @@ abstract class BaseShopifyJob extends BaseJob implements RetryableJobInterface
 
     public function getShop(): Shop
     {
-        $site = $this->getSite();
+        $shop = null;
 
-        if (!isset($this->shop))
+        // $site = $this->getSite();
+        // Craft::dd([
+        //     'shopId' => $this->shopId,
+        //     'shopDomain' => $this->shopDomain,
+        //     'siteHandle' => ($site ? $site->handle : null),
+        //     'siteDomain' => ($site ? Shopify::$plugin->getSettings()->getStoreDomain($site->handle) : null),
+        // ]);
+
+        if (isset($this->shopId))
         {
-            $shop = null;
+            $shop = Shopify::$plugin->shops->getShopById($this->shopId);
 
-            if (isset($this->shopId)) {
-                $shop = Shopify::$plugin->shops->getShopById($this->shopId, $site->id);
-            }
-
-            else
+            if (!$shop)
             {
-                // @todo: One shop could support multiple sites, and vice-versa
-                // default to shop domain, configured for the job's site
-                if (!isset($this->shopDomain) && $site) {
-                    $this->shopDomain = Shopify::$plugin->getSettings()->getStoreDomain($site->handle);
-                }
-
-                if (isset($this->shopDomain))
-                {
-                    $shop = new Shop();
-
-                    if (!StringHelper::contains($this->shopDomain, '.myshopify.com')) {
-                        $shop->primaryDomain = $this->shopDomain;
-                    } else {
-                        $shop->myshopifyDomain = $this->shopDomain;
-                    }
-
-                    if (!in_array($site->id, $shop->getSupportedSites())) {
-                        unset($shop);
-                    }
-                }
-
-                if (!$shop) {
-                    throw new InvalidConfigException(Craft::t('shopify-store',
-                        'Could not find Shopify shop for Job settings'
-                    ));
-                }
+                throw new InvalidConfigException(Craft::t('shopify-store',
+                    'Could not find Shopify shop for Job settings'
+                ));
             }
-
-            $this->shop = $shop;
         }
 
-        return $this->shop;
+        else if (isset($this->shopDomain)) {
+            $shop = Shopify::$plugin->shops->getShopByDomain($this->shopDomain);
+        }
+
+        // @todo: One shop could support multiple sites, and vice-versa
+        // default to shop domain, configured for the job's site
+        else if (($site = $this->getSite())
+            && ($shopDomain = Shopify::$plugin->getSettings()->getStoreDomain($site->handle)))
+        {
+            $shop = Shopify::$plugin->shops->getShopByDomain($shopDomain);
+            if (!$shop) $shop = new Shop();
+
+            if (StringHelper::contains($shopDomain, '.myshopify.com')) {
+                $shop->myshopifyDomain = $shopDomain;
+            } else {
+                $shop->primaryDomain = $shopDomain;
+            }
+        }
+
+        return $shop;
     }
 
     /**
@@ -227,11 +161,8 @@ abstract class BaseShopifyJob extends BaseJob implements RetryableJobInterface
 
     public function getShopId()
     {
-        if (!isset($this->shopId))
-        {
-            if (($shop = $this->getShop())) {
-                $this->$shopId = $shop->id;
-            }
+        if (!isset($this->shopId) && ($shop = $this->getShop())) {
+            $this->$shopId = $shop->id;
         }
 
         return $this->shopId;
@@ -245,11 +176,8 @@ abstract class BaseShopifyJob extends BaseJob implements RetryableJobInterface
 
     public function getShopDomain()
     {
-        if (!isset($this->shopDomain))
-        {
-            if (($shop = $this->getShop())) {
-                $this->$shopDomain = $shop->primaryDomain ?? $shop->myshopifyDomain;
-            }
+        if (!isset($this->shopDomain) && ($shop = $this->getShop())) {
+            $this->$shopDomain = ($shop->primaryDomain ?? $shop->myshopifyDomain);
         }
 
         return $this->shopDomain;
