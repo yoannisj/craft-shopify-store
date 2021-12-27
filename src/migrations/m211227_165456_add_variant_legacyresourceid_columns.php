@@ -31,6 +31,9 @@ class m211227_165456_add_variant_legacyresourceid_columns extends Migration
         $this->addColumn(Shopify::TABLE_SHOPIFY_PRODUCTS, 'variantLegacyResourceIds',
             (string)$this->longText());
 
+        $this->createIndex(null, Shopify::TABLE_SHOPIFY_PRODUCTS, 'variantLegacyResourceId', false);
+        $this->createIndex(null, Shopify::TABLE_SHOPIFY_PRODUCTS, 'variantLegacyResourceIds', false);
+    
         // resave products to populate the new column
         $allProducts = Product::find()
             ->limit(null)
@@ -43,17 +46,14 @@ class m211227_165456_add_variant_legacyresourceid_columns extends Migration
 
             $record = ProductRecord::findOne([ 'id' => $product->id ]) ?: new ProductRecord();
             $attributes = $product->getAttributes();
-            $attributes['legacyResourceIds'] = implode(',',
-                $attributes['legacyResourceIds']);
+            $attributes['variantLegacyResourceIds'] = implode(',',
+                $attributes['variantLegacyResourceIds']);
 
             $record->setAttributes($attributes, false);
             if (!$record->save()) return false;
 
             $this->endCommand($time);
         }
-
-        $this->createIndex(null, Shopify::TABLE_SHOPIFY_PRODUCTS, 'variantLegacyResourceId', false);
-        $this->createIndex(null, Shopify::TABLE_SHOPIFY_PRODUCTS, 'variantLegacyResourceIds', false);
 
         // resave products to populate the new column
         // Craft::$app->getQueue()->push(new ResaveElements([

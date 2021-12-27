@@ -318,42 +318,6 @@ class Product extends Element
     public $handle;
 
     /**
-     * @var int
-     */
-
-    private $_variantLegacyResourceId;
-
-    /**
-     * @var int[]
-     */
-
-    private $_variantLegacyResourceIds;
-
-    /**
-     * @var string
-     */
-
-    private $_variantAdminId;
-
-    /**
-     * @var string[]
-     */
-
-    private $_variantAdminIds;
-
-    /**
-     * @var String
-     */
-
-    private $_variantStorefrontId;
-
-    /**
-     * @var string[]
-     */
-
-    private $_variantStorefrontIds;
-
-    /**
      * @var String
      */
 
@@ -414,6 +378,48 @@ class Product extends Element
     // public $tags;
 
     /**
+     * @var [ ProductVariant ]
+     */
+
+    private $_variants;
+
+    /**
+     * @var int
+     */
+
+    private $_variantLegacyResourceId;
+
+    /**
+     * @var int[]
+     */
+
+    private $_variantLegacyResourceIds;
+
+    /**
+     * @var string
+     */
+
+    private $_variantAdminId;
+
+    /**
+     * @var string[]
+     */
+
+    private $_variantAdminIds;
+
+    /**
+     * @var String
+     */
+
+    private $_variantStorefrontId;
+
+    /**
+     * @var string[]
+     */
+
+    private $_variantStorefrontIds;
+
+    /**
      * @var Bool
      */
 
@@ -454,24 +460,6 @@ class Product extends Element
      */
 
     // public $priceRange;
-
-    /**
-     * @var [ ProductVariant ]
-     */
-
-    private $_variants;
-
-    /**
-     * @var [ Int ]
-     */
-
-    private $_variantAdminIds;
-
-    /**
-     * @var [ Int ]
-     */
-
-    private $_variantStorefontId;
 
     /**
      * @var array [ Collection ]
@@ -666,7 +654,7 @@ class Product extends Element
      * @param int $resourceId
      */
 
-    public function setVariantAdminId( $resourceId )
+    public function setVariantLegacyResourceId( $resourceId )
     {
         $this->_variantLegacyResourceId = $resourceId;
     }
@@ -675,7 +663,7 @@ class Product extends Element
      * @return int
      */
 
-    public function getVariantAdminId(): int
+    public function getVariantLegacyResourceId(): int
     {
         if (!isset($this->_variantLegacyResourceId))
         {
