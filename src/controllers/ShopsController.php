@@ -71,7 +71,7 @@ class ShopsController extends Controller
             {
                 Craft::$app->queue->push(new PullShopData([
                     'siteId' => $siteId,
-                    'includeProducts' => $includeProducts
+                    'includeProducts' => $includeProducts,
                 ]));
             }
         }

@@ -70,7 +70,7 @@ class Install extends Migration
                 'variantLegacyResourceIds' => $this->longText()->notNull(),
                 'variantAdminId' => $this->string()->notNull(),
                 'variantStorefrontId' => $this->string()->notNull(),
-                'variantStorefrontIds' => $this->string()->notNull(),
+                'variantStorefrontIds' => $this->longText()->notNull(),
                 'title' => $this->string()->notNull(),
                 'description' => $this->mediumText()->null(),
                 'isGiftCard' => $this->boolean()->notNull(),
