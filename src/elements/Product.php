@@ -245,8 +245,12 @@ class Product extends Element
             'shop',
             'adminId',
             'handle',
+            'variantLegacyResourceId',
+            'variantLegacyResourceIds',
             'variantAdminId',
+            'variantAdminIds',
             'variantStorefrontId',
+            'variantStorefrontIds',
             'title',
             'vendor',
             'productType',
@@ -314,10 +318,28 @@ class Product extends Element
     public $handle;
 
     /**
-     * @var String
+     * @var int
+     */
+
+    private $_variantLegacyResourceId;
+
+    /**
+     * @var int[]
+     */
+
+    private $_variantLegacyResourceIds;
+
+    /**
+     * @var string
      */
 
     private $_variantAdminId;
+
+    /**
+     * @var string[]
+     */
+
+    private $_variantAdminIds;
 
     /**
      * @var String
@@ -326,7 +348,7 @@ class Product extends Element
     private $_variantStorefrontId;
 
     /**
-     * @var string|array
+     * @var string[]
      */
 
     private $_variantStorefrontIds;
@@ -511,6 +533,8 @@ class Product extends Element
 
         $attributes = array_unique(array_merge($attributes, [
             'shopifyData',
+            'variantLegacyResourceId',
+            'variantLegacyResourceIds',
             'variantAdminId',
             'variantStorefrontId',
             'variantStorefrontIds',
@@ -628,40 +652,6 @@ class Product extends Element
     }
 
     /**
-     * Getter method for the `variantAdminIds` property
-     *
-     * @return Array
-     */
-
-    public function getVariantAdminIds(): array
-    {
-        if (!isset($this->_varaintAdminIds))
-        {
-            $variants = $this->getVariants();
-            $this->_varaintAdminIds = ArrayHelper::getColumn($variants, 'adminId');
-        }
-
-        return $this->_varaintAdminIds;
-    }
-
-    /**
-     * Getter method for the `variantStorefrontIds` property
-     *
-     * @return Array
-     */
-
-    public function getVariantStorefrontIds(): array
-    {
-        if (!isset($this->_variantStorefrontIds))
-        {
-            $variants = $this->getVariants();
-            $this->_variantStorefrontIds = ArrayHelper::getColumn($variants, 'storefrontId');
-        }
-
-        return $this->_variantStorefrontIds;
-    }
-
-    /**
      * Getter method for the `defaultVariant` property
      *
      * @return Array
@@ -670,6 +660,49 @@ class Product extends Element
     public function getDefaultVariant()
     {
         return ArrayHelper::firstValue($this->getVariants());
+    }
+
+    /**
+     * @param int $resourceId
+     */
+
+    public function setVariantAdminId( $resourceId )
+    {
+        $this->_variantLegacyResourceId = $resourceId;
+    }
+
+    /**
+     * @return int
+     */
+
+    public function getVariantAdminId(): int
+    {
+        if (!isset($this->_variantLegacyResourceId))
+        {
+            $defaultVariant = $this->getDefaultVariant();
+            $resourceId = trim(ArrayHelper::getValue($defaultVariant, 'legacyResourceId'));
+
+            $this->_variantLegacyResourceId = (int)$resourceId;
+        }
+
+        return $this->_variantLegacyResourceId;
+    }
+
+    /**
+     * Getter method for the `variantStorefrontIds` property
+     *
+     * @return Array
+     */
+
+    public function getVariantLegacyResourceIds(): array
+    {
+        if (!isset($this->_variantLegacyResourceIds))
+        {
+            $variants = $this->getVariants();
+            $this->_variantLegacyResourceIds = ArrayHelper::getColumn($variants, 'legacyResourceId');
+        }
+
+        return $this->_variantLegacyResourceIds;
     }
 
     /**
@@ -697,6 +730,23 @@ class Product extends Element
     }
 
     /**
+     * Getter method for the `variantAdminIds` property
+     *
+     * @return Array
+     */
+
+    public function getVariantAdminIds(): array
+    {
+        if (!isset($this->_variantAdminIds))
+        {
+            $variants = $this->getVariants();
+            $this->_variantAdminIds = ArrayHelper::getColumn($variants, 'adminId');
+        }
+
+        return $this->_variantAdminIds;
+    }
+
+    /**
      * @param String | null
      */
 
@@ -718,6 +768,23 @@ class Product extends Element
         }
 
         return $this->_variantStorefrontId;
+    }
+
+    /**
+     * Getter method for the `variantStorefrontIds` property
+     *
+     * @return Array
+     */
+
+    public function getVariantStorefrontIds(): array
+    {
+        if (!isset($this->_variantStorefrontIds))
+        {
+            $variants = $this->getVariants();
+            $this->_variantStorefrontIds = ArrayHelper::getColumn($variants, 'storefrontId');
+        }
+
+        return $this->_variantStorefrontIds;
     }
 
     /**
@@ -858,6 +925,10 @@ class Product extends Element
         }
 
         $attributes = $this->getAttributes();
+
+        $attributes['variantLegacyResourceIds'] = implode(',',
+            $attributes['variantLegacyResourceIds']);
+
         $attributes['variantStorefrontIds'] = implode(',',
             $attributes['variantStorefrontIds']);
 

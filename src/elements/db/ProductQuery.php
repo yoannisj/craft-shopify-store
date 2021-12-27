@@ -68,6 +68,18 @@ class ProductQuery extends ElementQuery
     public $handle;
 
     /**
+     * @var int
+     */
+
+    public $variantLegacyResourceId;
+
+    /**
+     * @var int[]
+     */
+
+    public $variantLegacyResourceIds;
+
+    /**
      * @var String
      */
 
@@ -80,7 +92,7 @@ class ProductQuery extends ElementQuery
     public $variantStorefrontId;
 
     /**
-     * @var String|array
+     * @var String[]
      */
 
     public $variantStorefrontIds;
@@ -183,6 +195,28 @@ class ProductQuery extends ElementQuery
     public function handle( $value ): ElementQuery
     {
         $this->handle = $value;
+
+        return $this;
+    }
+
+    /**
+     * 
+     */
+
+    public function variantLegacyResourceId( $value ): ElementQuery
+    {
+        $this->variantLegacyResourceId = $value;
+
+        return $this;
+    }
+
+    /**
+     * 
+     */
+
+    public function variantLegacyResourceIds( $value ): ElementQuery
+    {
+        $this->variantLegacyResourceIds = $value;
 
         return $this;
     }
@@ -311,6 +345,15 @@ class ProductQuery extends ElementQuery
         // apply 'handle' criteria as 'where' conditions to the subQuery
         if ($this->handle) {
             $this->subQuery->andWhere(DbHelper::parseParam('shopify_products.handle', $this->handle));
+        }
+
+        // apply 'variantStorefrontId' criteria as 'where' conditions to the subQuery
+        if ($this->variantLegacyResourceId) {
+            $this->subQuery->andWhere(DbHelper::parseParam('shopify_products.variantLegacyResourceId', $this->variantLegacyResourceId));
+        }
+
+        if ($this->variantLegacyResourceIds) {
+            $this->subQuery->andWhere(DbHelper::parseParam('shopify_products.variantLegacyResourceIds', $this->variantLegacyResourceIds, 'or like'));
         }
 
         // apply 'variantAdminId' criteria as 'where' conditions to the subQuery

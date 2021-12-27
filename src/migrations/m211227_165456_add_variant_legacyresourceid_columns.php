@@ -14,7 +14,7 @@ use yoannisj\shopify\records\ProductRecord;
  * m211104_144923_add_variant_storefront_ids_column migration.
  */
 
-class m211104_144923_add_variant_storefront_ids_column extends Migration
+class m211227_165456_add_variant_legacyresourceid_columns extends Migration
 {
     /**
      * @inheritdoc
@@ -25,7 +25,10 @@ class m211104_144923_add_variant_storefront_ids_column extends Migration
             return false;
         }
 
-        $this->addColumn(Shopify::TABLE_SHOPIFY_PRODUCTS, 'variantStorefrontIds',
+        $this->addColumn(Shopify::TABLE_SHOPIFY_PRODUCTS, 'variantLegacyResourceId',
+            (string)$this->bigInteger());
+
+        $this->addColumn(Shopify::TABLE_SHOPIFY_PRODUCTS, 'variantLegacyResourceIds',
             (string)$this->longText());
 
         // resave products to populate the new column
@@ -40,8 +43,8 @@ class m211104_144923_add_variant_storefront_ids_column extends Migration
 
             $record = ProductRecord::findOne([ 'id' => $product->id ]) ?: new ProductRecord();
             $attributes = $product->getAttributes();
-            $attributes['variantStorefrontIds'] = implode(',',
-                $attributes['variantStorefrontIds']);
+            $attributes['legacyResourceIds'] = implode(',',
+                $attributes['legacyResourceIds']);
 
             $record->setAttributes($attributes, false);
             if (!$record->save()) return false;
@@ -49,7 +52,8 @@ class m211104_144923_add_variant_storefront_ids_column extends Migration
             $this->endCommand($time);
         }
 
-        $this->createIndex(null, Shopify::TABLE_SHOPIFY_PRODUCTS, 'variantStorefrontIds', false);
+        $this->createIndex(null, Shopify::TABLE_SHOPIFY_PRODUCTS, 'variantLegacyResourceId', false);
+        $this->createIndex(null, Shopify::TABLE_SHOPIFY_PRODUCTS, 'variantLegacyResourceIds', false);
 
         // resave products to populate the new column
         // Craft::$app->getQueue()->push(new ResaveElements([
@@ -66,7 +70,8 @@ class m211104_144923_add_variant_storefront_ids_column extends Migration
     public function safeDown()
     {
         if ($this->db->tableExists(Shopify::TABLE_SHOPIFY_PRODUCTS)) {
-            $this->dropColumn(Shopify::TABLE_SHOPIFY_PRODUCTS, 'variantStorefrontIds');
+            $this->dropColumn(Shopify::TABLE_SHOPIFY_PRODUCTS, 'variantLegacyResourceId');
+            $this->dropColumn(Shopify::TABLE_SHOPIFY_PRODUCTS, 'variantLegacyResourceIds');
         }
 
         return true;

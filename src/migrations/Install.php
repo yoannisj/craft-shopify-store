@@ -66,6 +66,8 @@ class Install extends Migration
                 'adminId' => $this->string()->notNull(),
                 'storefrontId' => $this->string()->notNull(),
                 'handle' => $this->string()->notNull(),
+                'variantLegacyResourceId' => $this->bigInteger()->notNull(),
+                'variantLegacyResourceIds' => $this->longText()->notNull(),
                 'variantAdminId' => $this->string()->notNull(),
                 'variantStorefrontId' => $this->string()->notNull(),
                 'variantStorefrontIds' => $this->string()->notNull(),
@@ -86,6 +88,8 @@ class Install extends Migration
             $this->createIndex(null, $productsTable, 'storefrontId', false);
             $this->createIndex(null, $productsTable, 'handle', false);
             $this->createIndex(null, $productsTable, 'variantAdminId', false);
+            $this->createIndex(null, $productsTable, 'variantLegacyResourceId', false);
+            $this->createIndex(null, $productsTable, 'variantLegacyResourceIds', false);
             $this->createIndex(null, $productsTable, 'variantStorefrontId', false);
             $this->createIndex(null, $productsTable, 'variantStorefrontIds', false);
             $this->createIndex(null, $productsTable, 'title', false);
