@@ -273,6 +273,30 @@ class AdminApi extends ApiService
         return ArrayHelper::getValue($results, 'data.product');
     }
 
+    /**
+     * 
+     */
+
+    public function getProductVariantDataById( string $shopifyId, string $site = null, bool $useCache = true ): array
+    {
+        $query = 'query ProductVariantDataById( $adminId: ID!) {
+            productVariant: productVariant(id: $adminId) {
+                ...productVariantDataFragment
+            }
+        }';
+        
+        // add field fragments
+        $query .= ' ' . AdminFragments::$productVariantDataFragment;
+
+        // build list of query variables
+        $variables = [ 'adminId' => $shopifyId ];
+
+        // get data by posting graphql request
+        $results = $this->request($query, $variables, $site, $useCache);
+
+        return ArrayHelper::getValue($results, 'data.productVariant');
+    }
+
     // =Discounts
     // -------------------------------------------------------------------------
 
