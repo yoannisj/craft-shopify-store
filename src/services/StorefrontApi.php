@@ -76,7 +76,25 @@ class StorefrontApi extends ApiService
         $storeDomain = $settings->getStoreDomain($site);
         $apiVersion = $settings->getStorefrontApiVersion($site);
 
-        return 'https://' . rtrim($storeDomain, '/') . '/api/' . $apiVersion . '/';
+        // trim store domain
+        $storeDomain = trim ($storeDomain, '/');
+
+        // set correct primary domain instead of any internal shopify domain
+        switch ($storeDomain) {
+            case 'aislings-sweets-treats.myshopify.com':
+                $storeDomain = 'store.nanit.com';
+                break;
+            case 'nanituk.myshopify.com':
+                $storeDomain = 'storeuk.nanit.com';
+                break;
+            case 'nanitcanada.myshopify.com':
+                $storeDomain = 'storeca.nanit.com';
+                break;
+            default:
+                // do nothing for anything else
+        }
+
+        return 'https://' . $storeDomain . '/api/' . $apiVersion . '/';
     }
 
     /**
